@@ -1,108 +1,116 @@
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 
-class TaskPage extends StatelessWidget {
+class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
+
+  @override
+  State<TaskPage> createState() => _TaskPageState();
+}
+
+class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
+  late TabController tabController;
+  int selectedTab = 0;
+
+  @override
+  void initState() {
+    tabController = TabController(length: 3, vsync: this);
+
+    tabController.addListener(() {
+      setState(() {
+        selectedTab = tabController.index;
+      });
+
+      print('Selected $selectedTab');
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body: CustomScrollView(
-      //   slivers: [
-      //     SliverAppBar(
-      //       pinned: true,
-      //       expandedHeight: MediaQuery.of(context).size.width - 50,
-      //       flexibleSpace: FlexibleSpaceBar(
-      //         background: Container(
-      //           decoration: const BoxDecoration(
-      //             color: AppStyle.floor,
-      //             borderRadius: BorderRadius.only(
-      //                 bottomLeft: Radius.circular(30),
-      //                 bottomRight: Radius.circular(30)),
-      //           ),
-      //           child: Text('pech'),
-      //         ),
-      //       ),
-      //     ),
-      //     SliverPersistentHeader(
-      //       pinned: true,
-      //       delegate: PersistentHeader(
-      //         widget: const Row(
-      //           // Format this to meet your need
-      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //           children: <Widget>[
-      //             Text('Hello World'),
-      //             Text('Hello World'),
-      //             Text('Hello World'),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //     SliverList(
-      //       delegate: SliverChildBuilderDelegate(
-      //         (BuildContext context, int index) {
-      //           return Container(
-      //             color: index.isOdd ? Colors.white : Colors.black12,
-      //             height: 100.0,
-      //             child: Center(
-      //               child: Text('$index', textScaleFactor: 5),
-      //             ),
-      //           );
-      //         },
-      //         childCount: 20,
-      //       ),
-      //     ),
-      //   ],
-      // ),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         child: Column(children: [
           Expanded(
+            flex: 3,
             child: Stack(
               children: [
                 Positioned(
                   child: Container(
                     width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(30),
                     height: 200,
                     decoration: const BoxDecoration(
-                      color: AppStyle.floor,
+                      color: AppStyle.darkPurple2,
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30)),
                     ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [Text('Hi User'), Text('This task app')],
+                    ),
                   ),
                 ),
                 Positioned(
-                  bottom: -10,
-                  left: 10,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width - 20,
-                    height: 100,
-                    color: Colors.blue,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      height: 40,
+                      child: Center(
+                        child: TabBar(
+                            dividerColor: Colors.transparent,
+                            controller: tabController,
+                            isScrollable: true,
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 30),
+                            labelColor: Colors.white,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicator: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: AppStyle.floor),
+                            tabs: [
+                              Tab(child: Text('To-do')),
+                              Tab(child: Text('Doing')),
+                              Tab(child: Text('Done')),
+                            ]),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           Expanded(
-              flex: 2,
-              child: CustomScrollView(
-                slivers: [
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return Container(
-                          color: index.isOdd ? Colors.white : Colors.black12,
-                          height: 100.0,
-                          child: Center(
-                            child: Text('$index', textScaleFactor: 5),
-                          ),
-                        );
-                      },
-                      childCount: 20,
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          return Container(
+                            color: index.isOdd ? Colors.white : Colors.black12,
+                            height: 100.0,
+                            child: Center(
+                              child: Text('$index', textScaleFactor: 5),
+                            ),
+                          );
+                        },
+                        childCount: 20,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ))
         ]),
       ),
