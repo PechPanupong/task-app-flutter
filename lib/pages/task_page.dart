@@ -1,3 +1,4 @@
+import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +18,14 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
     tabController = TabController(length: 3, vsync: this);
 
     tabController.addListener(() {
-      setState(() {
-        selectedTab = tabController.index;
-      });
+      final newTabIndex = tabController.index;
+      if (newTabIndex != selectedTab) {
+        setState(() {
+          selectedTab = newTabIndex;
+        });
 
-      print('Selected $selectedTab');
+        print('Selected $selectedTab');
+      }
     });
     super.initState();
   }
@@ -39,7 +43,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                 Positioned(
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(30),
                     height: 200,
                     decoration: const BoxDecoration(
                       color: AppStyle.darkPurple2,
@@ -47,9 +51,24 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30)),
                     ),
-                    child: Column(
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text('Hi User'), Text('This task app')],
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Text(
+                          'Hi User',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          'This is task app',
+                          style: TextStyle(color: Colors.white54),
+                        )
+                      ],
                     ),
                   ),
                 ),
@@ -63,7 +82,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Container(
-                      padding: EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(4),
                       height: 40,
                       child: Center(
                         child: TabBar(
@@ -77,7 +96,7 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                             indicator: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
                                 color: AppStyle.floor),
-                            tabs: [
+                            tabs: const [
                               Tab(child: Text('To-do')),
                               Tab(child: Text('Doing')),
                               Tab(child: Text('Done')),
@@ -95,15 +114,18 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
                 padding: const EdgeInsets.only(top: 12.0),
                 child: CustomScrollView(
                   slivers: [
+                    SliverToBoxAdapter(
+                      child: Text('$selectedTab'),
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
+                          // date and detail
                           return Container(
+                            padding: EdgeInsets.symmetric(horizontal: 30),
                             color: index.isOdd ? Colors.white : Colors.black12,
                             height: 100.0,
-                            child: Center(
-                              child: Text('$index', textScaleFactor: 5),
-                            ),
+                            child: DetailBox(),
                           );
                         },
                         childCount: 20,
@@ -115,39 +137,5 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
         ]),
       ),
     );
-  }
-}
-
-class PersistentHeader extends SliverPersistentHeaderDelegate {
-  final Widget widget;
-
-  PersistentHeader({required this.widget});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      width: double.infinity,
-      height: 66.0,
-      child: Center(
-        child: Card(
-          margin: EdgeInsets.symmetric(horizontal: 12),
-          color: Colors.white,
-          elevation: 5.0,
-          child: Center(child: widget),
-        ),
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => 66.0;
-
-  @override
-  double get minExtent => 66.0;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
   }
 }
