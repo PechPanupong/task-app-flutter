@@ -2,6 +2,8 @@ import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 
+import '../components/task_page/task_list_layout.dart';
+
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
 
@@ -12,6 +14,7 @@ class TaskPage extends StatefulWidget {
 class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
   late TabController tabController;
   int selectedTab = 0;
+  String selectedType = "TODO";
 
   @override
   void initState() {
@@ -24,7 +27,18 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
           selectedTab = newTabIndex;
         });
 
-        print('Selected $selectedTab');
+        switch (selectedTab) {
+          case 0:
+            selectedType = 'TODO';
+          case 1:
+            selectedType = 'DOING';
+          case 2:
+            selectedType = 'DONE';
+          default:
+            selectedType = 'TODO';
+        }
+
+        print('Selected $selectedType');
       }
     });
     super.initState();
@@ -112,26 +126,8 @@ class _TaskPageState extends State<TaskPage> with TickerProviderStateMixin {
               flex: 5,
               child: Padding(
                 padding: const EdgeInsets.only(top: 12.0),
-                child: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Text('$selectedTab'),
-                    ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                          // date and detail
-                          return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 30),
-                            color: index.isOdd ? Colors.white : Colors.black12,
-                            height: 100.0,
-                            child: DetailBox(),
-                          );
-                        },
-                        childCount: 20,
-                      ),
-                    ),
-                  ],
+                child: TaskListLayout(
+                  type: selectedType,
                 ),
               ))
         ]),

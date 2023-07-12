@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class TaskListModel {
   List<TaskModel> tasks = [];
   num pageNumber = 0;
@@ -7,7 +9,7 @@ class TaskListModel {
 
   factory TaskListModel.fromJson(dynamic data) {
     var model = TaskListModel();
-    model.tasks = ((data['task'] ?? []) as List<TaskModel>)
+    model.tasks = ((data['tasks'] ?? []) as List<dynamic>)
         .map((e) => TaskModel.fromJson(e))
         .toList();
     model.pageNumber = data['pageNumber'];
@@ -20,7 +22,7 @@ class TaskModel {
   String id = '';
   String title = '';
   String description = '';
-  String createdAt = '';
+  dynamic createdAt = DateTime.now();
   String status = '';
 
   TaskModel();
@@ -34,4 +36,23 @@ class TaskModel {
     model.status = data['status'];
     return model;
   }
+}
+
+Map<String, List<TaskModel>> groupTasksByDate(List<TaskModel> tasks) {
+  final Map<String, List<TaskModel>> groupedTasks = {};
+
+  for (final task in tasks) {
+    final formattedDate =
+        DateFormat('yyyy-MM-dd').format(DateTime.parse(task.createdAt));
+
+    if (groupedTasks.containsKey(formattedDate)) {
+      groupedTasks[formattedDate]!.add(task);
+    } else {
+      groupedTasks[formattedDate] = [task];
+    }
+  }
+
+  // print(groupedTasks);
+
+  return groupedTasks;
 }

@@ -1,27 +1,55 @@
 import 'package:flutter/material.dart';
 
-class DetailBox extends StatelessWidget {
-  const DetailBox({super.key});
+import '../../models/task.dart';
+
+class DetailBox extends StatefulWidget {
+  final TaskModel data;
+
+  const DetailBox({
+    required this.data,
+  });
+
+  @override
+  State<DetailBox> createState() => _DetailBoxState();
+}
+
+class _DetailBoxState extends State<DetailBox> {
+  bool toggleShow = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.amber,
-      constraints: BoxConstraints.expand(),
-      padding: EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'title',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          toggleShow = !toggleShow;
+        });
+      },
+      child: ListTile(
+        title: Text(
+          widget.data.title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
           ),
-          Text(
-            'st est veniam deserunt eu aliqua anim exercitation. Deserunt Lorem reprehenderit magna cupidatat sunt eiusmod ut sunt deserunt nulla ea tempor commodo',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(widget.data.description,
+            maxLines: 2, overflow: TextOverflow.ellipsis),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: const BoxDecoration(
+            color: Colors.blue,
+            shape: BoxShape.circle,
           ),
-        ],
+          child: Center(
+            child: Text(
+              widget.data.status,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
       ),
     );
   }
