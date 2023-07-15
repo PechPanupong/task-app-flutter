@@ -1,3 +1,4 @@
+import 'package:app/components/task_page/task_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,6 +23,13 @@ class _DetailBoxState extends State<DetailBox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return TaskDetail(widget.data);
+            });
+
         setState(() {
           toggleShow = !toggleShow;
         });
