@@ -41,6 +41,7 @@ dependencies:
   shared_preferences: ^2.2.0
   provider: ^6.0.5
   flutter_screenutil: ^5.8.4
+  passcode_screen: ^2.0.1
 
 dev_dependencies:
   flutter_test:

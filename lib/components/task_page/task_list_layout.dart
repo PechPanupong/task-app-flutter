@@ -2,9 +2,13 @@ import 'dart:convert';
 
 import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/models/task.dart';
+import 'package:app/style/app_style.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+
+import '../../utils/common.dart';
 
 class TaskListLayout extends StatefulWidget {
   const TaskListLayout({super.key, this.type = 'TODO'});
@@ -126,7 +130,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: REdgeInsets.all(8.0),
                 child: Text(
                   date,
                   style: const TextStyle(
@@ -148,7 +152,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
                     },
                     background: Container(
                       alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 16),
+                      padding: REdgeInsets.only(right: 32),
                       color: Colors.red,
                       child: const Icon(
                         Icons.delete,
@@ -166,7 +170,15 @@ class _TaskListLayoutState extends State<TaskListLayout> {
         } else if (isLoading) {
           return const Center(child: CircularProgressIndicator());
         } else {
-          return const SizedBox();
+          return Center(
+            child: Text(
+              'No ${CommonUtil.mapTaskWording(widget.type)} task right now',
+              style: TextStyle(
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppStyle.darkSilver),
+            ),
+          );
         }
       },
     );

@@ -11,19 +11,27 @@ class AppRouter {
     return _router;
   }
 
-  final _router = GoRouter(initialLocation: '/', routes: [
-    GoRoute(
-      path: '/',
-      // builder: (context, state) => const TaskPage(),
-      builder: (context, state) {
-        var isLogin = context.select((AppStorage value) => value.isLogin);
-        print('islogin $isLogin');
-        return isLogin ? const TaskPage() : PassLockScreen();
+  final _router = GoRouter(
+      initialLocation: '/',
+      redirect: (context, state) {
+        var isLogin = context.read<AppStorage>().isLogin;
+        var closeDate = context.read<AppStorage>().closeDate;
+        Duration isTimeOut =
+            DateTime.now().difference(DateTime.parse(closeDate));
+        print('close date $closeDate');
+        print('redirect');
+
+        if (isTimeOut.inSeconds > 10) return '/lock';
+        return isLogin ? '/' : '/lock';
       },
-    ),
-    GoRoute(
-      path: '/lock',
-      builder: (context, state) => PassLockScreen(),
-    ),
-  ]);
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const TaskPage(),
+        ),
+        GoRoute(
+          path: '/lock',
+          builder: (context, state) => const PassLockScreen(),
+        ),
+      ]);
 }

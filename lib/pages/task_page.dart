@@ -23,31 +23,42 @@ class _TaskPageState extends State<TaskPage>
   late TabController tabController;
   int selectedTab = 0;
   String selectedType = "TODO";
-  late DateTime pauseTime;
+  Color typeColor = AppStyle.lightPastelBlue;
+  // late DateTime pauseTime;
   Timer? _timer;
+
   @override
   void initState() {
     tabController = TabController(length: 3, vsync: this);
-
     tabController.addListener(() {
       final newTabIndex = tabController.index;
       if (newTabIndex != selectedTab) {
         setState(() {
           selectedTab = newTabIndex;
         });
-
         switch (selectedTab) {
           case 0:
             selectedType = 'TODO';
+            setState(() {
+              typeColor = AppStyle.lightPastelBlue;
+            });
+
           case 1:
             selectedType = 'DOING';
+            setState(() {
+              typeColor = AppStyle.ligthPastelPink;
+            });
+
           case 2:
             selectedType = 'DONE';
+            setState(() {
+              typeColor = AppStyle.ligthSuccess;
+            });
+
           default:
             selectedType = 'TODO';
+            typeColor = AppStyle.lightPastelBlue;
         }
-
-        print('Selected $selectedType');
       }
     });
     super.initState();
@@ -61,35 +72,28 @@ class _TaskPageState extends State<TaskPage>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        print('resumed');
-        var close = context.read<AppStorage>().closeDate;
-        DateTime resumedTime = DateTime.now();
-        Duration appCloseDuration =
-            resumedTime.difference(DateTime.parse(close));
-        if (appCloseDuration.inSeconds > 10) {
-          print('go');
-          context.read<AppStorage>().isLogin = false;
-
-          GoRouter.of(context).replace('/lock');
-        }
+        _restartTimer();
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
-        print('paused');
+        _restartTimer();
         context.read<AppStorage>().closeDate = DateTime.now();
+
         break;
       case AppLifecycleState.detached:
-        print('detached');
+        _restartTimer();
         context.read<AppStorage>().closeDate = DateTime.now();
+
         break;
     }
   }
 
   void _startTimer() {
+    print('start timer');
     _timer = Timer(const Duration(seconds: 10), () {
       context.read<AppStorage>().isLogin = false;
-      GoRouter.of(context).replace('/lock');
+      GoRouter.of(context).go('/lock');
     });
   }
 
@@ -100,34 +104,45 @@ class _TaskPageState extends State<TaskPage>
 
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
+    _timer?.cancel();
+    context.read<AppStorage>().closeDate = DateTime.now();
     WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
+      body: Listener(
         behavior: HitTestBehavior.opaque,
-        onTap: () {
-          _restartTimer();
+        onPointerDown: (event) {
+          // _restartTimer();
         },
         child: SizedBox(
           width: double.infinity,
           child: Column(children: [
-            Container(
+            SizedBox(
               height: 300.h,
               child: Stack(
                 children: [
                   Positioned(
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 700),
+                      curve: Curves.easeInOut,
                       width: MediaQuery.of(context).size.width,
                       padding: REdgeInsets.all(30),
                       height: 270.h,
-                      decoration: const BoxDecoration(
-                        color: AppStyle.darkPurple2,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                        color: AppStyle.colorByTask(selectedType, true),
+                        borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(30),
                             bottomRight: Radius.circular(30)),
                       ),
@@ -140,13 +155,13 @@ class _TaskPageState extends State<TaskPage>
                           Text(
                             'Hi User',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppStyle.darkSilver,
                                 fontSize: 28.sp,
                                 fontWeight: FontWeight.w700),
                           ),
                           const Text(
                             'This is task app',
-                            style: TextStyle(color: Colors.white54),
+                            style: TextStyle(color: AppStyle.darkSilver),
                           )
                         ],
                       ),
@@ -163,19 +178,24 @@ class _TaskPageState extends State<TaskPage>
                       ),
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        height: 40.h,
+                        height: 50.h,
                         child: Center(
                           child: TabBar(
                               dividerColor: Colors.transparent,
                               controller: tabController,
                               isScrollable: true,
-                              labelPadding:
-                                  const EdgeInsets.symmetric(horizontal: 30),
+                              labelStyle: TextStyle(
+                                  fontSize: 18.sp, fontWeight: FontWeight.bold),
+                              labelPadding: REdgeInsets.symmetric(
+                                horizontal: 40,
+                              ),
                               labelColor: Colors.white,
+                              unselectedLabelColor: AppStyle.darkSilver,
                               indicatorSize: TabBarIndicatorSize.tab,
                               indicator: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30),
-                                  color: AppStyle.floor),
+                                  color: AppStyle.colorByTask(
+                                      selectedType, false)),
                               tabs: const [
                                 Tab(child: Text('To-do')),
                                 Tab(child: Text('Doing')),
@@ -190,7 +210,7 @@ class _TaskPageState extends State<TaskPage>
             ),
             Expanded(
                 child: Padding(
-              padding: const EdgeInsets.only(top: 2.0).r,
+              padding: REdgeInsets.symmetric(horizontal: 20),
               child: TaskListLayout(
                 type: selectedType,
               ),
