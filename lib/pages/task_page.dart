@@ -24,7 +24,6 @@ class _TaskPageState extends State<TaskPage>
   int selectedTab = 0;
   String selectedType = "TODO";
   Color typeColor = AppStyle.lightPastelBlue;
-  // late DateTime pauseTime;
   Timer? _timer;
 
   @override
@@ -70,21 +69,23 @@ class _TaskPageState extends State<TaskPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    var isLogin = context.read<AppStorage>().isLogin;
     switch (state) {
       case AppLifecycleState.resumed:
+        if (!isLogin) return;
         _restartTimer();
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
+        if (!isLogin) return;
         _restartTimer();
         context.read<AppStorage>().closeDate = DateTime.now();
-
         break;
       case AppLifecycleState.detached:
+        if (!isLogin) return;
         _restartTimer();
         context.read<AppStorage>().closeDate = DateTime.now();
-
         break;
     }
   }
@@ -93,7 +94,21 @@ class _TaskPageState extends State<TaskPage>
     print('start timer');
     _timer = Timer(const Duration(seconds: 10), () {
       context.read<AppStorage>().isLogin = false;
-      GoRouter.of(context).go('/lock');
+      // GoRouter.of(context).go('/lock');
+      // GoRouter.of(context).push('/lock');
+      showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          isDismissible: false,
+          enableDrag: false,
+          builder: (BuildContext context) {
+            return PassLockScreen(
+              isPage: false,
+              startTimer: () {
+                _restartTimer();
+              },
+            );
+          });
     });
   }
 
@@ -106,7 +121,6 @@ class _TaskPageState extends State<TaskPage>
   void dispose() {
     super.dispose();
     _timer?.cancel();
-    context.read<AppStorage>().closeDate = DateTime.now();
     WidgetsBinding.instance.removeObserver(this);
   }
 

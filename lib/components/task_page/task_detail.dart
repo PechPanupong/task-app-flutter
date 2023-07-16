@@ -1,7 +1,9 @@
 import 'package:app/models/task.dart';
+import 'package:app/store/app_storage.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class TaskDetail extends StatelessWidget {
   const TaskDetail(this.taskDetail, {super.key});
@@ -44,7 +46,8 @@ class TaskDetail extends StatelessWidget {
               flex: 1,
               child: SingleChildScrollView(
                 child: Container(
-                  padding: REdgeInsets.all(15),
+                  padding: REdgeInsets.only(
+                      left: 15, right: 15, bottom: 15, top: 30),
                   child: Text(
                     taskDetail.description,
                     style:

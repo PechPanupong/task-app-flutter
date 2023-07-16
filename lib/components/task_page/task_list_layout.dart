@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/components/confirm_dialog.dart';
 import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/models/task.dart';
 import 'package:app/style/app_style.dart';
@@ -39,7 +40,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
   @override
   void didUpdateWidget(TaskListLayout oldWidget) {
     if (oldWidget.type != widget.type) {
-      // Reset the tasks and fetch new tasks when type changes
+      // Reset the tasks
       setState(() {
         tasks.clear();
         groupedTasks.clear();
@@ -104,7 +105,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
     }
   }
 
-  void _deleteTask(String taskId, String createdAt) {
+  _deleteTask(String taskId, String createdAt) {
     final dateKey = DateFormat('yyyy-MM-dd').format(DateTime.parse(createdAt));
 
     setState(() {
@@ -147,6 +148,13 @@ class _TaskListLayoutState extends State<TaskListLayout> {
                   return Dismissible(
                     key: UniqueKey(),
                     direction: DismissDirection.endToStart,
+                    confirmDismiss: (_) {
+                      return showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const ConfirmDialog();
+                          });
+                    },
                     onDismissed: (_) {
                       _deleteTask(task.id, task.createdAt);
                     },
@@ -169,7 +177,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
           );
         } else if (isLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else {
+        } else if (groupedTasks.isEmpty) {
           return Center(
             child: Text(
               'No ${CommonUtil.mapTaskWording(widget.type)} task right now',
