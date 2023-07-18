@@ -17,10 +17,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AppStorage>(create: (context) => appStorage)
-      ],
+    return ChangeNotifierProvider<AppStorage>(
+      create: (context) => appStorage,
       child: Builder(builder: (context) {
         return ScreenUtilInit(
           designSize: const Size(390, 933),

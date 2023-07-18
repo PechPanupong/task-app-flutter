@@ -2,7 +2,7 @@ import 'package:app/components/task_page/task_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../models/task.dart';
+import '../../models/task_model.dart';
 import '../../style/app_style.dart';
 
 class DetailBox extends StatefulWidget {

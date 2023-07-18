@@ -1,4 +1,4 @@
-import 'package:app/models/task.dart';
+import 'package:app/models/task_model.dart';
 import 'package:app/store/app_storage.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';

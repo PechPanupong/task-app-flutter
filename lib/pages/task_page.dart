@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/pages/pass_lock_page.dart';
 import 'package:app/store/app_storage.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,8 +20,19 @@ class _TaskPageState extends State<TaskPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late TabController tabController;
   int selectedTab = 0;
-  String selectedType = "TODO";
-  Color typeColor = AppStyle.lightPastelBlue;
+  String get selectedType {
+    switch (selectedTab) {
+      case 0:
+        return 'TODO';
+      case 1:
+        return 'DOING';
+      case 2:
+        return 'DONE';
+      default:
+        return 'TODO';
+    }
+  }
+
   Timer? _timer;
 
   @override
@@ -35,29 +44,6 @@ class _TaskPageState extends State<TaskPage>
         setState(() {
           selectedTab = newTabIndex;
         });
-        switch (selectedTab) {
-          case 0:
-            selectedType = 'TODO';
-            setState(() {
-              typeColor = AppStyle.lightPastelBlue;
-            });
-
-          case 1:
-            selectedType = 'DOING';
-            setState(() {
-              typeColor = AppStyle.ligthPastelPink;
-            });
-
-          case 2:
-            selectedType = 'DONE';
-            setState(() {
-              typeColor = AppStyle.ligthSuccess;
-            });
-
-          default:
-            selectedType = 'TODO';
-            typeColor = AppStyle.lightPastelBlue;
-        }
       }
     });
     super.initState();
@@ -94,8 +80,6 @@ class _TaskPageState extends State<TaskPage>
     print('start timer');
     _timer = Timer(const Duration(seconds: 10), () {
       context.read<AppStorage>().isLogin = false;
-      // GoRouter.of(context).go('/lock');
-      // GoRouter.of(context).push('/lock');
       showModalBottomSheet(
           context: context,
           isScrollControlled: true,

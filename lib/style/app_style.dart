@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/task.dart';
+import '../models/task_model.dart';
 
 class AppStyle {
   static const Color ligthSuccess = Color.fromRGBO(192, 248, 217, 1);
