@@ -13,10 +13,11 @@ class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  State<TaskPage> createState() => TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage>
+@visibleForTesting
+class TaskPageState extends State<TaskPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late TabController tabController;
   int selectedTab = 0;
@@ -33,7 +34,7 @@ class _TaskPageState extends State<TaskPage>
     }
   }
 
-  Timer? _timer;
+  Timer? timer;
 
   @override
   void initState() {
@@ -59,26 +60,26 @@ class _TaskPageState extends State<TaskPage>
     switch (state) {
       case AppLifecycleState.resumed:
         if (!isLogin) return;
-        _restartTimer();
+        restartTimer();
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
         if (!isLogin) return;
-        _restartTimer();
-        context.read<AppStorage>().closeDate = DateTime.now();
+        restartTimer();
+        context.read<AppStorage>().closeDate = DateTime.now().toString();
         break;
       case AppLifecycleState.detached:
         if (!isLogin) return;
-        _restartTimer();
-        context.read<AppStorage>().closeDate = DateTime.now();
+        restartTimer();
+        context.read<AppStorage>().closeDate = DateTime.now().toString();
         break;
     }
   }
 
-  void _startTimer() {
+  void startTimer() {
     print('start timer');
-    _timer = Timer(const Duration(seconds: 10), () {
+    timer = Timer(const Duration(seconds: 10), () {
       context.read<AppStorage>().isLogin = false;
       showModalBottomSheet(
           context: context,
@@ -89,22 +90,22 @@ class _TaskPageState extends State<TaskPage>
             return PassLockScreen(
               isPage: false,
               startTimer: () {
-                _restartTimer();
+                restartTimer();
               },
             );
           });
     });
   }
 
-  void _restartTimer() {
-    _timer?.cancel();
-    _startTimer();
+  void restartTimer() {
+    timer?.cancel();
+    startTimer();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _timer?.cancel();
+    timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
   }
 

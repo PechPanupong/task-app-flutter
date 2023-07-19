@@ -30,7 +30,7 @@ class _PassLockScreenState extends State<PassLockScreen> {
     _verificationNotifier.add(isValid);
     if (isValid) {
       context.read<AppStorage>().isLogin = true;
-      context.read<AppStorage>().closeDate = DateTime.now();
+      context.read<AppStorage>().closeDate = DateTime.now().toString();
       // if (GoRouter.of(context).canPop()) {
       //   // Navigator.pop(context);
       //   context.pop();

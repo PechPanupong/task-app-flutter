@@ -1,6 +1,5 @@
 import 'package:app/pages/pass_lock_page.dart';
 import 'package:app/pages/task_page.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -18,8 +17,6 @@ class AppRouter {
         var closeDate = context.read<AppStorage>().closeDate;
         Duration isTimeOut =
             DateTime.now().difference(DateTime.parse(closeDate));
-        print('close date $closeDate');
-        print('redirect');
 
         if (isTimeOut.inSeconds > 10) return '/lock';
         return isLogin ? '/' : '/lock';

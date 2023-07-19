@@ -3,41 +3,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppStorage with ChangeNotifier {
   final SharedPreferences _prefs;
-  final Map<String, dynamic> _localStore = {};
 
-  dynamic _closeDate;
-  bool? _isLogin;
+  late String _closeDate;
+  bool _isLogin = false;
 
   static const closeDateKey = 'closeDate';
   static const isLoginKey = 'isLogin';
 
-  // private constructor
-  AppStorage._create(this._prefs) {
-    _closeDate = _prefs.getString(closeDateKey);
-    _isLogin = _prefs.getBool(isLoginKey);
+  AppStorage(this._prefs) {
+    _closeDate = _prefs.getString(closeDateKey) ?? DateTime.now().toString();
+    _isLogin = _prefs.getBool(isLoginKey) ?? false;
   }
 
-  // factory to to inject async dependenies
   static Future<AppStorage> create() async {
-    return AppStorage._create(await SharedPreferences.getInstance());
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return AppStorage(sharedPreferences);
   }
 
-  dynamic get closeDate {
-    return _closeDate;
-  }
+  String get closeDate => _closeDate;
 
-  set closeDate(dynamic val) {
-    _closeDate = val.toString();
-    _prefs.setString(closeDateKey, val.toString());
+  set closeDate(String val) {
+    _closeDate = val;
+    _prefs.setString(closeDateKey, val);
     notifyListeners();
   }
 
-  bool get isLogin {
-    return _isLogin ?? false;
-  }
+  bool get isLogin => _isLogin;
 
   set isLogin(bool val) {
     _isLogin = val;
     _prefs.setBool(isLoginKey, val);
+    notifyListeners();
   }
 }
