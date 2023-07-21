@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/store/app_storage.dart';
+import 'package:app/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:passcode_screen/circle.dart';
@@ -21,17 +22,9 @@ class ChangePassWord extends StatelessWidget {
     final StreamController<bool> verificationNotifierChangePassword =
         StreamController<bool>.broadcast();
 
-    _showToast(BuildContext context) {
-      final scaffold = ScaffoldMessenger.of(context);
-      scaffold.showSnackBar(
-        const SnackBar(
-          content: Text('Password changed !!!'),
-        ),
-      );
-    }
+    final CommonUtil common = CommonUtil();
 
     _onPasscodeEntered(String enteredPasscode) {
-      print('enteredPasscode');
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -41,7 +34,7 @@ class ChangePassWord extends StatelessWidget {
               context.read<AppStorage>().password = enteredPasscode;
               restartTimer!();
               Navigator.pop(context);
-              _showToast(context);
+              common.showSnackBar(context, 'Password changed !!!');
             },
           );
         },

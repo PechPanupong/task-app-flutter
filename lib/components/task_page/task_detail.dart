@@ -5,9 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 class TaskDetail extends StatelessWidget {
-  const TaskDetail(this.taskDetail, {super.key});
+  const TaskDetail(this.taskDetail, {super.key, this.restartTimer});
 
   final TaskModel taskDetail;
+  final Function? restartTimer;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class TaskDetail extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  restartTimer!();
                 },
                 icon: const Icon(
                   Icons.close,

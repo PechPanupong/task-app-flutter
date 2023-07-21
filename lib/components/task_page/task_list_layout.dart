@@ -6,12 +6,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../utils/common.dart';
+import 'task_detail.dart';
 import 'task_item.dart';
 
 class TaskListLayout extends StatefulWidget {
-  const TaskListLayout({super.key, this.type = 'TODO'});
+  const TaskListLayout({super.key, this.type = 'TODO', this.restartTimer});
   final String type;
-
+  final Function? restartTimer;
   @override
   _TaskListLayoutState createState() => _TaskListLayoutState();
 }
@@ -25,6 +26,8 @@ class _TaskListLayoutState extends State<TaskListLayout> {
   int totalPages = 1;
   bool isLoading = false;
   final Dio dio = Dio();
+  final CommonUtil common = CommonUtil();
+  String apiURL = 'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list';
 
   @override
   void initState() {
@@ -35,7 +38,6 @@ class _TaskListLayoutState extends State<TaskListLayout> {
   @override
   void didUpdateWidget(TaskListLayout oldWidget) {
     if (oldWidget.type != widget.type) {
-      // Reset the tasks
       setState(() {
         tasks.clear();
         groupedTasks.clear();
@@ -60,15 +62,13 @@ class _TaskListLayoutState extends State<TaskListLayout> {
     });
 
     try {
-      final response = await dio.get(
-          'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list',
-          queryParameters: {
-            'offset': offset,
-            'limit': itemLimit,
-            'sortBy': 'createdAt',
-            'isAsc': true,
-            'status': widget.type
-          });
+      final response = await dio.get(apiURL, queryParameters: {
+        'offset': offset,
+        'limit': itemLimit,
+        'sortBy': 'createdAt',
+        'isAsc': true,
+        'status': widget.type
+      });
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -94,24 +94,13 @@ class _TaskListLayoutState extends State<TaskListLayout> {
 
   _deleteTask(String taskId, String createdAt) {
     final dateKey = DateFormat('dd MMM yyyy').format(DateTime.parse(createdAt));
-
     setState(() {
       groupedTasks[dateKey]!.removeWhere((task) => task.id == taskId);
-
       if (groupedTasks[dateKey]!.isEmpty) {
         groupedTasks.remove(dateKey);
-        _showToast(context);
       }
+      common.showSnackBar(context, 'Task Deleted !!!');
     });
-  }
-
-  void _showToast(BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      const SnackBar(
-        content: Text('Task Deleted'),
-      ),
-    );
   }
 
   @override
@@ -156,10 +145,25 @@ class _TaskListLayoutState extends State<TaskListLayout> {
                           children: [
                             for (final task
                                 in groupedTasks.values.elementAt(index))
-                              TaskItem(
-                                task: task,
-                                onDelete: () =>
-                                    _deleteTask(task.id, task.createdAt),
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      isDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return TaskDetail(
+                                          task,
+                                          restartTimer: () =>
+                                              widget.restartTimer!(),
+                                        );
+                                      });
+                                },
+                                child: TaskItem(
+                                  task: task,
+                                  onDelete: () =>
+                                      _deleteTask(task.id, task.createdAt),
+                                ),
                               ),
                           ],
                         ),

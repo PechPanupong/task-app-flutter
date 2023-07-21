@@ -48,7 +48,6 @@ class TaskPageState extends State<TaskPage>
       }
     });
     super.initState();
-
     WidgetsBinding.instance.addObserver(this);
     startTimer();
   }
@@ -78,7 +77,7 @@ class TaskPageState extends State<TaskPage>
   }
 
   void startTimer() {
-    print('start timer');
+    print('start');
     timer = Timer(const Duration(seconds: 10), () {
       context.read<AppStorage>().isLogin = false;
       showModalBottomSheet(
@@ -129,7 +128,6 @@ class TaskPageState extends State<TaskPage>
               tabController,
               selectedType: selectedType,
               stopTimer: () {
-                print('cancel time');
                 timer?.cancel();
               },
               restartTimer: () {
@@ -140,6 +138,9 @@ class TaskPageState extends State<TaskPage>
           SliverList(
               delegate: SliverChildListDelegate([
             TaskListLayout(
+              restartTimer: () {
+                restartTimer();
+              },
               type: selectedType,
             )
           ]))

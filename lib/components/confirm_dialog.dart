@@ -31,7 +31,7 @@ class ConfirmDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(false); // Close the dialog
+            Navigator.of(context).pop();
           },
           child: Text(
             'Cancel',
@@ -40,8 +40,8 @@ class ConfirmDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            confirm!(); // Perform the desired action
-            Navigator.of(context).pop(true); // Close the dialog
+            confirm!();
+            Navigator.of(context).pop();
           },
           child: Text(
             'Confirm',

@@ -64,7 +64,6 @@ class TaskHeader extends StatelessWidget {
                       IconButton(
                           onPressed: () {
                             stopTimer!();
-
                             showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
