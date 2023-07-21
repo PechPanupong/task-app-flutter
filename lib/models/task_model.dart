@@ -43,7 +43,7 @@ Map<String, List<TaskModel>> groupTasksByDate(List<TaskModel> tasks) {
 
   for (final task in tasks) {
     final formattedDate =
-        DateFormat('yyyy-MM-dd').format(DateTime.parse(task.createdAt));
+        DateFormat('dd MMM yyyy').format(DateTime.parse(task.createdAt));
 
     if (groupedTasks.containsKey(formattedDate)) {
       groupedTasks[formattedDate]!.add(task);
@@ -51,8 +51,6 @@ Map<String, List<TaskModel>> groupTasksByDate(List<TaskModel> tasks) {
       groupedTasks[formattedDate] = [task];
     }
   }
-
-  // print(groupedTasks);
 
   return groupedTasks;
 }

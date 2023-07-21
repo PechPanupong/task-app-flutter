@@ -3,19 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ConfirmDialog extends StatelessWidget {
-  const ConfirmDialog({super.key, this.confirm});
+  const ConfirmDialog(
+      {super.key,
+      this.title = 'Confirmation',
+      this.content = 'Are you sure to continue?',
+      this.confirm});
 
   final Function? confirm;
+  final String title;
+  final String content;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Confirmation',
-        style: TextStyle(fontWeight: FontWeight.bold),
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       content: Text(
-        'Are you sure to delete this task',
+        content,
         style: TextStyle(
             fontSize: 20.sp,
             color: AppStyle.darkSilver,
@@ -34,8 +40,8 @@ class ConfirmDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
+            confirm!(); // Perform the desired action
             Navigator.of(context).pop(true); // Close the dialog
-            // confirm!(); // Perform the desired action
           },
           child: Text(
             'Confirm',

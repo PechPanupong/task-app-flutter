@@ -6,13 +6,16 @@ class AppStorage with ChangeNotifier {
 
   late String _closeDate;
   bool _isLogin = false;
+  late String _password;
 
   static const closeDateKey = 'closeDate';
   static const isLoginKey = 'isLogin';
+  static const passwordKey = 'passwordKey';
 
   AppStorage(this._prefs) {
     _closeDate = _prefs.getString(closeDateKey) ?? DateTime.now().toString();
     _isLogin = _prefs.getBool(isLoginKey) ?? false;
+    _password = _prefs.getString(passwordKey) ?? '123456';
   }
 
   static Future<AppStorage> create() async {
@@ -33,6 +36,14 @@ class AppStorage with ChangeNotifier {
   set isLogin(bool val) {
     _isLogin = val;
     _prefs.setBool(isLoginKey, val);
+    notifyListeners();
+  }
+
+  String get password => _password;
+
+  set password(String val) {
+    _password = val;
+    _prefs.setString(passwordKey, val);
     notifyListeners();
   }
 }

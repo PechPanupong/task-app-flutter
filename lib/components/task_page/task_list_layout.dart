@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:app/components/confirm_dialog.dart';
-import 'package:app/components/task_page/detail_box.dart';
 import 'package:app/models/task_model.dart';
 import 'package:app/style/app_style.dart';
 import 'package:dio/dio.dart';
@@ -10,10 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
 import '../../utils/common.dart';
+import 'task_item.dart';
 
 class TaskListLayout extends StatefulWidget {
   const TaskListLayout({super.key, this.type = 'TODO'});
   final String type;
+
   @override
   _TaskListLayoutState createState() => _TaskListLayoutState();
 }
@@ -21,20 +19,17 @@ class TaskListLayout extends StatefulWidget {
 class _TaskListLayoutState extends State<TaskListLayout> {
   List<TaskModel> tasks = [];
   Map<String, List<TaskModel>> groupedTasks = {};
-  // late TaskListModel tasks;
   int pageNumber = 0;
   int offset = 0;
   int itemLimit = 10;
   int totalPages = 1;
   bool isLoading = false;
-  ScrollController scrollController = ScrollController();
   final Dio dio = Dio();
 
   @override
   void initState() {
     super.initState();
     fetchTasks();
-    scrollController.addListener(scrollListener);
   }
 
   @override
@@ -55,7 +50,6 @@ class _TaskListLayoutState extends State<TaskListLayout> {
 
   @override
   void dispose() {
-    scrollController.removeListener(scrollListener);
     super.dispose();
   }
 
@@ -64,6 +58,7 @@ class _TaskListLayoutState extends State<TaskListLayout> {
     setState(() {
       isLoading = true;
     });
+
     try {
       final response = await dio.get(
           'https://todo-list-api-mfchjooefq-as.a.run.app/todo-list',
@@ -97,94 +92,81 @@ class _TaskListLayoutState extends State<TaskListLayout> {
     offset++;
   }
 
-  void scrollListener() {
-    if (scrollController.position.pixels ==
-            scrollController.position.maxScrollExtent &&
-        !isLoading) {
-      fetchTasks();
-    }
-  }
-
   _deleteTask(String taskId, String createdAt) {
-    final dateKey = DateFormat('yyyy-MM-dd').format(DateTime.parse(createdAt));
+    final dateKey = DateFormat('dd MMM yyyy').format(DateTime.parse(createdAt));
 
     setState(() {
       groupedTasks[dateKey]!.removeWhere((task) => task.id == taskId);
 
       if (groupedTasks[dateKey]!.isEmpty) {
         groupedTasks.remove(dateKey);
+        _showToast(context);
       }
     });
   }
 
+  void _showToast(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      const SnackBar(
+        content: Text('Task Deleted'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      controller: scrollController,
-      itemCount: groupedTasks.length + 1,
-      itemBuilder: (context, index) {
-        if (index < groupedTasks.length) {
-          final date = groupedTasks.keys.elementAt(index);
-          final tasksForDate = groupedTasks[date];
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: REdgeInsets.all(8.0),
-                child: Text(
-                  date,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: tasksForDate!.length,
-                itemBuilder: (context, index) {
-                  final task = tasksForDate[index];
-
-                  return Dismissible(
-                    key: UniqueKey(),
-                    direction: DismissDirection.endToStart,
-                    confirmDismiss: (_) {
-                      return showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const ConfirmDialog();
-                          });
-                    },
-                    onDismissed: (_) {
-                      _deleteTask(task.id, task.createdAt);
-                    },
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: REdgeInsets.only(right: 32),
-                      color: Colors.red,
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ),
-                    child: DetailBox(
-                      data: task,
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        } else if (isLoading) {
+    return FutureBuilder<void>(
+      future: fetchTasks(),
+      builder: (context, snapshot) {
+        if (isLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (groupedTasks.isEmpty) {
+        } else if (groupedTasks.isEmpty && !isLoading) {
           return Center(
             child: Text(
               'No ${CommonUtil.mapTaskWording(widget.type)} task right now',
               style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppStyle.darkSilver),
+                fontSize: 24.sp,
+                fontWeight: FontWeight.bold,
+                color: AppStyle.darkSilver,
+              ),
+            ),
+          );
+        } else {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                for (int index = 0; index < groupedTasks.length; index++)
+                  Container(
+                    padding: REdgeInsets.only(right: 10, left: 10, bottom: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: REdgeInsets.all(8.0),
+                          child: Text(
+                            groupedTasks.keys.elementAt(index),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            for (final task
+                                in groupedTasks.values.elementAt(index))
+                              TaskItem(
+                                task: task,
+                                onDelete: () =>
+                                    _deleteTask(task.id, task.createdAt),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           );
         }

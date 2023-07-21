@@ -25,39 +25,27 @@ class MyApp extends StatelessWidget {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (BuildContext context, Widget? child) {
-            return MaterialApp.router(
-                routeInformationProvider:
-                    appRouter.router.routeInformationProvider,
-                routeInformationParser: appRouter.router.routeInformationParser,
-                routerDelegate: appRouter.router.routerDelegate,
-                debugShowCheckedModeBanner: false,
-                title: 'Flutter Demo',
-                theme: ThemeData(
-                  colorScheme:
-                      ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-                  useMaterial3: true,
-                ),
-                builder: (context, child) {
-                  return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                        textScaleFactor: 1.0), //check breakpoint later
-                    child: child!,
-                  );
-                });
+            return SafeArea(
+              child: MaterialApp.router(
+                  routeInformationProvider:
+                      appRouter.router.routeInformationProvider,
+                  routeInformationParser:
+                      appRouter.router.routeInformationParser,
+                  routerDelegate: appRouter.router.routerDelegate,
+                  debugShowCheckedModeBanner: false,
+                  title: 'Flutter Demo',
+                  theme: ThemeData(
+                    colorScheme:
+                        ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                    useMaterial3: true,
+                  ),
+                  builder: (context, child) {
+                    return child!;
+                  }),
+            );
           },
         );
       }),
-      // builder: (context, child) {
-      //   return ScreenUtilInit(
-      //     designSize: const Size(390, 933),
-      //     minTextAdapt: true,
-      //     splitScreenMode: true,
-      //     builder: (_, __) => MaterialApp(
-      //       debugShowCheckedModeBanner: false,
-      //       home: child,
-      //     ),
-      //   );
-      // },
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:app/components/task_page/task_header.dart';
 import 'package:app/pages/pass_lock_page.dart';
 import 'package:app/store/app_storage.dart';
-import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,7 +50,7 @@ class TaskPageState extends State<TaskPage>
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
-    // _startTimer();
+    startTimer();
   }
 
   @override
@@ -115,107 +115,35 @@ class TaskPageState extends State<TaskPage>
       body: Listener(
         behavior: HitTestBehavior.opaque,
         onPointerDown: (event) {
-          // _restartTimer();
+          restartTimer();
         },
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(children: [
-            SizedBox(
-              height: 300.h,
-              child: Stack(
-                children: [
-                  Positioned(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 700),
-                      curve: Curves.easeInOut,
-                      width: MediaQuery.of(context).size.width,
-                      padding: REdgeInsets.all(30),
-                      height: 270.h,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                        color: AppStyle.colorByTask(selectedType, true),
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            bottomRight: Radius.circular(30)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 30.h,
-                          ),
-                          Text(
-                            'Hi User',
-                            style: TextStyle(
-                                color: AppStyle.darkSilver,
-                                fontSize: 28.sp,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          const Text(
-                            'This is task app',
-                            style: TextStyle(color: AppStyle.darkSilver),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10.h,
-                    left: 20.w,
-                    right: 20.w,
-                    child: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        height: 50.h,
-                        child: Center(
-                          child: TabBar(
-                              dividerColor: Colors.transparent,
-                              controller: tabController,
-                              isScrollable: true,
-                              labelStyle: TextStyle(
-                                  fontSize: 18.sp, fontWeight: FontWeight.bold),
-                              labelPadding: REdgeInsets.symmetric(
-                                horizontal: 40,
-                              ),
-                              labelColor: Colors.white,
-                              unselectedLabelColor: AppStyle.darkSilver,
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              indicator: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  color: AppStyle.colorByTask(
-                                      selectedType, false)),
-                              tabs: const [
-                                Tab(child: Text('To-do')),
-                                Tab(child: Text('Doing')),
-                                Tab(child: Text('Done')),
-                              ]),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        child: CustomScrollView(slivers: [
+          SliverAppBar(
+            bottom: PreferredSize(
+              preferredSize: Size(0.w, 110.h),
+              child: const SizedBox.shrink(),
             ),
-            Expanded(
-                child: Padding(
-              padding: REdgeInsets.symmetric(horizontal: 20),
-              child: TaskListLayout(
-                type: selectedType,
-              ),
-            ))
-          ]),
-        ),
+            floating: true,
+            expandedHeight: 300.h,
+            flexibleSpace: TaskHeader(
+              tabController,
+              selectedType: selectedType,
+              stopTimer: () {
+                print('cancel time');
+                timer?.cancel();
+              },
+              restartTimer: () {
+                restartTimer();
+              },
+            ),
+          ),
+          SliverList(
+              delegate: SliverChildListDelegate([
+            TaskListLayout(
+              type: selectedType,
+            )
+          ]))
+        ]),
       ),
     );
   }

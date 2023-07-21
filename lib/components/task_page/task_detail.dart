@@ -1,9 +1,8 @@
 import 'package:app/models/task_model.dart';
-import 'package:app/store/app_storage.dart';
 import 'package:app/style/app_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class TaskDetail extends StatelessWidget {
   const TaskDetail(this.taskDetail, {super.key});
@@ -40,6 +39,18 @@ class TaskDetail extends StatelessWidget {
               taskDetail.title,
               textAlign: TextAlign.start,
               style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            padding: REdgeInsets.symmetric(horizontal: 15),
+            child: Text(
+              DateFormat('dd MMM yyyy hh:mm:ss')
+                  .format(DateTime.parse(taskDetail.createdAt)),
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  color: AppStyle.darkSilver,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
