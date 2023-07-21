@@ -56,5 +56,9 @@ void main() {
       taskPageState.selectedTab = -1;
       expect(taskPageState.selectedType, 'TODO');
     });
+
+    test('Check start timer function', () {});
+
+    test('Start timer with life cycle', () {});
   });
 }
